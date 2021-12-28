@@ -1,32 +1,24 @@
-import React, { FC, useEffect, useMemo } from 'react';
-import { FeedLine } from '../../typesDef';
-import serverRequest from '../../Helpers/api';
+import React, { FC, useState, useMemo } from 'react';
+
+import { useServersRequest } from '../../hooks/useServerRequest';
 import FeedContent from './FeedContent';
 import Loader from '../Loader/Loader';
 import PaginationButtons from './PaginationButtons';
 import ErrorBlock from './ErrorBlock';
 import './FeedLinePage.scss';
+import { REQUEST_URL } from '../../Helpers/constants';
 
 export const PAGINATION_PAGES = [1, 2, 3];
 
 const FeedLinePage: FC = () => {
-  const [feedLine, setFeedLine] = React.useState<FeedLine[] | []>([]);
-  const [isServerResponded, setIsServerResponded] = React.useState<boolean>(false);
-  const [isServerError, setIsServerError] = React.useState<boolean>(false);
-  const [paginationPage, setPaginationPage] = React.useState(1);
+  const [paginationPage, setPaginationPage] = useState(1);
   const feedCountPerPage = 10;
 
-  const getFeedLineFromServer = async () => {
-    const serverResponse = await serverRequest('/trending/feed');
-    try {
-      setFeedLine(serverResponse);
-      setIsServerResponded(true);
-    } catch (error) {
-      setIsServerResponded(true);
-      setIsServerError(true);
-      console.warn(error);
-    }
-  };
+  const {
+    isServerResponded,
+    data: feedLine,
+    isServerError,
+  } = useServersRequest<REQUEST_URL.FEED>(REQUEST_URL.FEED);
 
   const handlePageChange = (page: number) => {
     if (page !== paginationPage) {
@@ -38,14 +30,10 @@ const FeedLinePage: FC = () => {
     const indexStart = (feedCountPerPage * paginationPage) - feedCountPerPage;
     const indexEnd = (feedCountPerPage * paginationPage) - 1;
 
-    return (
+    return feedLine ? (
       [...feedLine].slice(indexStart, indexEnd)
-    );
+    ) : [];
   }, [paginationPage, feedLine]);
-
-  useEffect(() => {
-    getFeedLineFromServer();
-  }, []);
 
   return (
     <div className="container-feedline">

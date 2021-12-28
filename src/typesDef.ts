@@ -1,6 +1,3 @@
-// import * as H from 'history';
-// feedLine response start
-
 export interface AuthorMeta {
   id: string;
   secUid: string;

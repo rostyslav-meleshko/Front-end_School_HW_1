@@ -1,12 +1,11 @@
-const BASE_URL = 'https://tiktok33.p.rapidapi.com';
-// const API_KEY = 'c623a8a0d6msh06483b4961c26b3p1e09c8jsne61c6fde6318';
-const API_KEY = 'c1257dc04cmshd888bbb072eb770p1f2b8ajsnbf16d4cd1d66';
+export const BASE_URL = 'https://tiktok33.p.rapidapi.com';
 
+// eslint-disable-next-line
 const serverRequest = (url: string): Promise<any> => fetch(`${BASE_URL}${url}`, {
   method: 'GET',
   headers: {
-    'x-rapidapi-host': 'tiktok33.p.rapidapi.com',
-    'x-rapidapi-key': `${API_KEY}`,
+    'x-rapidapi-host': `${process.env.REACT_APP_API_HOST}`,
+    'x-rapidapi-key': `${process.env.REACT_APP_API_KEY}`,
   },
 })
   .then((response) => {

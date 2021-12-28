@@ -1,30 +1,21 @@
-import React, { FC, useEffect } from 'react';
-import { FeedLine } from '../../typesDef';
-import serverRequest from '../../Helpers/api';
+import React, { FC } from 'react';
+
+import { useServersRequest } from '../../hooks/useServerRequest';
 import Loader from '../Loader/Loader';
 import ErrorBlock from '../FeedLinePage/ErrorBlock';
+import { REQUEST_URL, VIDEO_SIZE_USER } from '../../Helpers/constants';
 
 const UserFeed: FC = () => {
-  const [feedLine, setFeedLine] = React.useState<FeedLine[] | []>([]);
-  const [isServerResponded, setIsServerResponded] = React.useState<boolean>(false);
-  const [isServerError, setIsServerError] = React.useState<boolean>(false);
+  // as server api with user feed working not correctly, I'm fetching standard feedline
+  // in case of working server, just need to replace url in hook useServerRequest
+  const {
+    isServerResponded,
+    data: feedLine,
+    isServerError,
+  } = useServersRequest<REQUEST_URL.FEED>(REQUEST_URL.FEED);
 
-  // as server api with user feed working not correctly, a fetched standard feedline
-  const getFeedLineFromServer = async () => {
-    const serverResponse = await serverRequest('/trending/feed');
-    try {
-      setFeedLine(serverResponse);
-      setIsServerResponded(true);
-    } catch (error) {
-      setIsServerResponded(true);
-      setIsServerError(true);
-      console.warn(error);
-    }
-  };
-
-  useEffect(() => {
-    getFeedLineFromServer();
-  }, []);
+  const isFeedline = isServerResponded && !isServerError && feedLine;
+  const isErrorMessage = isServerResponded && !isServerError && !feedLine;
 
   return (
     <>
@@ -38,7 +29,7 @@ const UserFeed: FC = () => {
 
       {isServerError && <ErrorBlock />}
 
-      {isServerResponded && !isServerError
+      {isFeedline
       && (
         <div className="user-container__user-feed">
           {feedLine.map((feed) => (
@@ -46,8 +37,8 @@ const UserFeed: FC = () => {
               <video
                 preload="true"
                 loop
-                width="207"
-                height="370"
+                width={VIDEO_SIZE_USER.WIDTH}
+                height={VIDEO_SIZE_USER.HEIGHT}
                 controls
                 muted
                 playsInline
@@ -59,7 +50,7 @@ const UserFeed: FC = () => {
         </div>
       )}
 
-      {isServerResponded && !isServerError && feedLine.length === 0
+      {isErrorMessage
       && <h2>No data at the moment. Please reload page</h2>}
     </>
   );

@@ -5,7 +5,8 @@ import { Link } from 'react-router-dom';
 
 import { FeedLine } from '../../typesDef';
 import roundCommentsValue from '../../Helpers/functions';
-import { setAuthorMeta } from '../../Redux/store';
+import { setAuthorMeta } from '../../redux/actions';
+import { IMAGE_SIZE_FEED, VIDEO_SIZE_FEED } from '../../Helpers/constants';
 
 type FeedContentProps = {
   feed: FeedLine;
@@ -13,7 +14,7 @@ type FeedContentProps = {
 
 const FeedContent: FC<FeedContentProps> = ({ feed }) => {
   const dispatch = useDispatch();
-  const windowWidth = window.outerWidth;
+  const isDesktop = window.outerWidth > 640;
   const { authorMeta } = feed;
 
   const pickUserData = () => {
@@ -35,8 +36,8 @@ const FeedContent: FC<FeedContentProps> = ({ feed }) => {
             title={`${feed.authorMeta.name} link`}
             role="link"
             alt="user_avatar"
-            height={windowWidth > 640 ? '56' : '36'}
-            width={windowWidth > 640 ? '56' : '36'}
+            height={isDesktop ? IMAGE_SIZE_FEED.DESKTOP : IMAGE_SIZE_FEED.MOBILE}
+            width={isDesktop ? IMAGE_SIZE_FEED.DESKTOP : IMAGE_SIZE_FEED.MOBILE}
             onClick={pickUserData}
             onKeyPress={handleKeyPress}
             tabIndex={0}
@@ -83,8 +84,8 @@ const FeedContent: FC<FeedContentProps> = ({ feed }) => {
             preload="true"
             autoPlay
             loop
-            width={windowWidth > 640 ? '336px' : '207px'}
-            height={windowWidth > 640 ? '600px' : '370px'}
+            width={isDesktop ? VIDEO_SIZE_FEED.DESKTOP_WIDTH : VIDEO_SIZE_FEED.MOBILE_WIDTH}
+            height={isDesktop ? VIDEO_SIZE_FEED.DESKTOP_HEIGHT : VIDEO_SIZE_FEED.MOBILE_HEIGHT}
             controls
             muted
             playsInline
